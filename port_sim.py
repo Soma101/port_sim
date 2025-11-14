@@ -177,7 +177,7 @@ for i in range(num_ships):
     )
     st.session_state.ships_data[i]["containers"] = st.number_input(
         f"Number of containers on Ship {i+1}",
-        min_value=1, max_value=((yard_cols*yard_rows)*.9),
+        min_value=1, max_value=int(((yard_cols*yard_rows)*.9)),
         value=st.session_state.ships_data[i].get("containers", 10)
     )
     st.session_state.ships_data[i]["delay"] = st.number_input(
