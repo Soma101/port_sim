@@ -20,7 +20,7 @@ class Container:
         return f"Container({self.weight}, {self.size}, {self.import_export}, {self.category})"
 
 class Ship:
-    _history_file = ".venv/ship_history.json"
+    _history_file = "ship_history.json"
     _history = {}
 
     # Load historical data
