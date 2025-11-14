@@ -36,11 +36,12 @@ class Ship:
         self._save_history_to_file()
 
     def _assign_delay(self, delay):
-        if delay is not None:
-            return delay
-        if self.name in Ship._history and Ship._history[self.name]:
-            return round(sum(Ship._history[self.name]) / len(Ship._history[self.name]))
-        return 0
+        # If delay is None or -1, use historical average if available
+        if delay is None or delay == -1:
+            if self.name in Ship._history and Ship._history[self.name]:
+                return round(sum(Ship._history[self.name]) / len(Ship._history[self.name]))
+            return 0  # No history → on time
+        return delay
 
     def _store_history(self):
         if self.name not in Ship._history:
@@ -170,14 +171,31 @@ if "ships_data" not in st.session_state:
 
 # Input for each ship
 for i in range(num_ships):
-    st.session_state.ships_data[i]["name"] = st.text_input(f"Ship {i+1} name", st.session_state.ships_data[i].get("name", f"Vessel{i+1}"))
-    st.session_state.ships_data[i]["containers"] = st.number_input(f"Number of containers on Ship {i+1}", min_value=1, max_value=100, value=st.session_state.ships_data[i].get("containers", 10))
-    st.session_state.ships_data[i]["delay"] = st.number_input(f"Delay in hours for Ship {i+1}", min_value=0, max_value=24, value=st.session_state.ships_data[i].get("delay", 0))
+    st.session_state.ships_data[i]["name"] = st.text_input(
+        f"Ship {i+1} name",
+        st.session_state.ships_data[i].get("name", f"Vessel{i+1}")
+    )
+    st.session_state.ships_data[i]["containers"] = st.number_input(
+        f"Number of containers on Ship {i+1}",
+        min_value=1, max_value=100,
+        value=st.session_state.ships_data[i].get("containers", 10)
+    )
+    st.session_state.ships_data[i]["delay"] = st.number_input(
+        f"Delay in hours for Ship {i+1} (-1 for historical average)",
+        min_value=-1, max_value=24,
+        value=st.session_state.ships_data[i].get("delay", -1)
+    )
 
 if st.button("Run Simulation"):
     ships = []
     for ship_data in st.session_state.ships_data:
-        ships.append(Ship(name=ship_data["name"], container_count=ship_data["containers"], delay=ship_data["delay"]))
+        ships.append(
+            Ship(
+                name=ship_data["name"],
+                container_count=ship_data["containers"],
+                delay=ship_data["delay"]  # Ship class will handle -1 correctly
+            )
+        )
 
     yard = np.zeros((yard_rows, yard_cols), dtype=int)
     final_yard = place_containers(yard, ships)
