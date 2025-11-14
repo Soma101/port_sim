@@ -181,7 +181,7 @@ for i in range(num_ships):
         value=st.session_state.ships_data[i].get("containers", 10)
     )
     st.session_state.ships_data[i]["delay"] = st.number_input(
-        f"Delay in hours for Ship {i+1} (-1 for historical average)",
+        f"Delay in hours for Ship {i+1} (-1 if delay unknown)",
         min_value=-1, max_value=24,
         value=st.session_state.ships_data[i].get("delay", -1)
     )
