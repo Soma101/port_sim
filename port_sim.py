@@ -161,8 +161,8 @@ def place_containers(yard, ships):
 
 st.title("Port Container Yard Simulator")
 
-yard_rows = st.number_input("Yard rows", min_value=1, max_value=20, value=5)
-yard_cols = st.number_input("Yard columns", min_value=1, max_value=20, value=5)
+yard_rows = st.number_input("Yard rows", min_value=1, max_value=50, value=5)
+yard_cols = st.number_input("Yard columns", min_value=1, max_value=50, value=5)
 num_ships = st.number_input("Number of ships", min_value=1, max_value=4, value=2)
 
 # Store ship inputs in session state to avoid duplication
@@ -177,7 +177,7 @@ for i in range(num_ships):
     )
     st.session_state.ships_data[i]["containers"] = st.number_input(
         f"Number of containers on Ship {i+1}",
-        min_value=1, max_value=100,
+        min_value=1, max_value=((yard_cols*yard_rows)*.9),
         value=st.session_state.ships_data[i].get("containers", 10)
     )
     st.session_state.ships_data[i]["delay"] = st.number_input(
