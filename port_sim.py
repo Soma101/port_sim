@@ -169,20 +169,36 @@ num_ships = st.number_input("Number of ships", min_value=1, max_value=4, value=2
 if "ships_data" not in st.session_state:
     st.session_state.ships_data = [{} for _ in range(num_ships)]
 
-# Input for each ship
+# Calculate max total containers based on yard size
+max_total_containers = int(yard_rows * yard_cols * 3 * 0.9)
+
+# Input for each ship with dynamic max limit
 for i in range(num_ships):
     st.session_state.ships_data[i]["name"] = st.text_input(
         f"Ship {i+1} name",
         st.session_state.ships_data[i].get("name", f"Vessel{i+1}")
     )
+
+    # Calculate current total excluding this ship
+    current_total = sum(
+        st.session_state.ships_data[j].get("containers", 0)
+        for j in range(num_ships) if j != i
+    )
+
+    # Maximum containers this ship can take
+    max_for_ship = max(1, max_total_containers - current_total)
+
     st.session_state.ships_data[i]["containers"] = st.number_input(
         f"Number of containers on Ship {i+1}",
-        min_value=1, max_value=int(((yard_cols*yard_rows)*.9)),
-        value=st.session_state.ships_data[i].get("containers", 10)
+        min_value=1,
+        max_value=max_for_ship,
+        value=min(st.session_state.ships_data[i].get("containers", 10), max_for_ship)
     )
+
     st.session_state.ships_data[i]["delay"] = st.number_input(
         f"Delay in hours for Ship {i+1} (-1 if delay unknown)",
-        min_value=-1, max_value=24,
+        min_value=-1,
+        max_value=24,
         value=st.session_state.ships_data[i].get("delay", -1)
     )
 
